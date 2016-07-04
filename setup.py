@@ -5,7 +5,7 @@ import setuptools
 
 setuptools.setup(
   name='autocli',
-  version='0.2',
+  version='0.3',
   author='Nikhil Kothari',
   description='Builds command line interfaces to parse objects or call functions',
   license='BSD',
