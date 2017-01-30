@@ -10,8 +10,7 @@ class OS(enum.Enum):
   Linux = 2
   Windows = 3
 
-class Computers(object):
-
+class Computer(object):
   os = OS.Mac
   version = '1.0'
   count = 1
@@ -21,6 +20,11 @@ class Computers(object):
   gpu = False
   volumes = ['']
   metadata = json.loads
+  user_tag = ''
+
+class VirtualMachine(Computer):
+  name = ''
+  networks = ['', ['+']]
 
 class Job(object):
 
@@ -28,7 +32,7 @@ class Job(object):
   _extra = []
 
 
-op = autocli.ObjectParser(Computers)
+op = autocli.ObjectParser(Computer)
 o = op.parse([])
 assert(o.os == OS.Mac)
 assert(o.version == '1.0')
@@ -41,16 +45,28 @@ assert(o.metadata is None)
 o = op.parse(['--metadata', '{"foo":"bar"}'])
 assert(o.metadata['foo'] == 'bar')
 
-o = op.parse(['--volumes', '/aaa', '--volumes', '/bbb'])
+o = op.parse(['--volumes', '/aaa', '/bbb'])
 assert(len(o.volumes) == 2)
 assert(o.volumes[1] == '/bbb')
+
+o = op.parse(['--volumes'])
 
 o = op.parse(['--count', '2', '--ram', '10'])
 assert(o.count == 2)
 assert(o.ram == 10.0)
+
+o = op.parse(['--user-tag', 'abc'])
+assert(o.user_tag == 'abc')
 
 j = autocli.parse_object(Job, ['--count', '2', 'some', 'more', 'args'])
 assert(j.count == 2)
 assert(j._extra is not None)
 assert(len(j._extra) == 3)
 assert(j._extra[1] == 'more')
+
+v = autocli.parse_object(VirtualMachine, ['--name', 'xyz', '--networks', 'n1', 'n2'])
+assert(v.os == OS.Mac)
+assert(v.version == '1.0')
+assert(v.name == 'xyz')
+assert(len(v.networks) == 2)
+assert(v.networks[1] == 'n2')
